@@ -1,13 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo/controllers/signup_controller.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/MySongModel.dart';
+import '../screens/likedSongPage.dart';
 
-class SongPlayerController extends GetxController {
+class HomePageController extends GetxController {
+  List<MySongModel> likedSongs = [];
+
   final player = AudioPlayer();
   bool isPlaying = false;
   String currentTime = "0";
@@ -23,8 +28,11 @@ class SongPlayerController extends GetxController {
   bool isCloudSoundPlaying = false;
   String albumUrl = "";
 
-
- // List<MySongModel> likedSongs = [];
+  // List<MySongModel> likedSongs = [];
+  void toggleFavorite() {
+    isLiked = !isLiked;
+    update(); // Notify GetX that the state has changed
+  }
 
   @override
   void onInit() {
@@ -34,18 +42,12 @@ class SongPlayerController extends GetxController {
     fetchUserData();
   }
 
-  void toggleFavorite() {
-    isLiked = !isLiked;
-    update(); // Notify GetX that the state has changed
-  }
-
-
-
   //from here i can play the songs
   void playLocalAudio(SongModel song) async {
     songTitle = song.title;
     songArtist = song.artist!;
-    isCloudSoundPlaying= false;
+    isCloudSoundPlaying = false;
+
     await player.setAudioSource(
       AudioSource.uri(
         Uri.parse(song.data),
@@ -58,16 +60,11 @@ class SongPlayerController extends GetxController {
     update();
   }
 
-
-
   void playCloudAudio(MySongModel song) async {
-    songTitle= song.title!;
+    songTitle = song.title!;
     songArtist = song.artist!;
-    albumUrl= song.albumArt!;
+    albumUrl = song.albumArt!;
     isCloudSoundPlaying = true;
-
-
-
     await player.setAudioSource(
       AudioSource.uri(
         Uri.parse(song.data!),
@@ -79,39 +76,33 @@ class SongPlayerController extends GetxController {
     update();
   }
 
-
-
-
-  void changeVolume(double volume){
-    volumeLevel= volume;
+  void changeVolume(double volume) {
+    volumeLevel = volume;
     player.setVolume(volumeLevel);
     print(volumeLevel);
     update();
-
   }
 
-  void setLoopSong() async{
-    if(isLoop){
+  void setLoopSong() async {
+    if (isLoop) {
       await player.setLoopMode(LoopMode.off);
-    }else{
+    } else {
       await player.setLoopMode(LoopMode.one);
     }
 
-    isLoop= !isLoop;
-update();
-}
+    isLoop = !isLoop;
+    update();
+  }
 
-
-void playRandomSong() async{
-   if(isShuffled){
-     await player.setShuffleModeEnabled(false);
-   }
-   else{
-     await player.setShuffleModeEnabled(true);
-   }
-   isShuffled= !isShuffled;
-   update();
-}
+  void playRandomSong() async {
+    if (isShuffled) {
+      await player.setShuffleModeEnabled(false);
+    } else {
+      await player.setShuffleModeEnabled(true);
+    }
+    isShuffled = !isShuffled;
+    update();
+  }
 
 //from where the song has stopped it starts from there means resume there...
   void resumePlaying() async {
@@ -128,9 +119,9 @@ void playRandomSong() async{
   }
 
 //somg willl move to that position from where the song will resume or start..
-  void changeSongSlider(Duration position){
+  void changeSongSlider(Duration position) {
     player.seek(position);
-update();
+    update();
   }
 
   void updatePosition() async {
@@ -141,7 +132,7 @@ update();
         update();
       });
       player.positionStream.listen((p) {
-        currentTime= p.toString().split(".")[0];
+        currentTime = p.toString().split(".")[0];
         sliderValue = p.inSeconds.toDouble();
         update();
       });
@@ -150,15 +141,15 @@ update();
     }
     update();
   }
+
   final audioQuery = OnAudioQuery();
 
-  List<SongModel> localSongList =[];
+  List<SongModel> localSongList = [];
   bool isDeviceSong = false;
   int currentSongPlayingIndex = 0;
 
-
   void getLocalSongs() async {
-    localSongList= await audioQuery.querySongs(
+    localSongList = await audioQuery.querySongs(
       ignoreCase: true,
       orderType: OrderType.ASC_OR_SMALLER,
       sortType: null,
@@ -200,46 +191,63 @@ update();
 
   void playNextSong() {
     int songListLen = localSongList.length;
-    currentSongPlayingIndex= currentSongPlayingIndex + 1;
-    if (currentSongPlayingIndex< songListLen) {
+    currentSongPlayingIndex = currentSongPlayingIndex + 1;
+    if (currentSongPlayingIndex < songListLen) {
       SongModel nextSong = localSongList[currentSongPlayingIndex];
       playLocalAudio(nextSong);
     }
     update();
   }
 
-  void playPreviousSong(){
+  void playPreviousSong() {
     int songListLen = localSongList.length;
     print(currentSongPlayingIndex);
-    if(currentSongPlayingIndex!=0){
+    if (currentSongPlayingIndex != 0) {
       currentSongPlayingIndex = --currentSongPlayingIndex;
-      if(currentSongPlayingIndex< songListLen){
+      if (currentSongPlayingIndex < songListLen) {
         SongModel nextSong = localSongList[currentSongPlayingIndex];
         playLocalAudio(nextSong);
       }
       update();
     }
-
   }
+
   String userName = '';
   String userEmail = '';
   String userId = '';
-  // Future<void> fetchUserData() async {
-  //
-  //   // Replace 'userId' with the actual user ID from authentication
-  //   var userData = await FirebaseFirestore.instance.collection('users').doc('userId').get();
-  //   if (userData.exists) {
-  //     userName = userData['name'];
-  //     userEmail = userData['email'];
-  //   }
-  //   update();
-  // }
+
   Future<void> fetchUserData() async {
-    Map<String, String> userData = Get.find<SignupController>().getUserData();
-    userId = userData['userId'] ?? '';
-    userName = userData['userName'] ?? '';
-    userEmail = userData['userEmail'] ?? '';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userName = prefs.getString('name') ?? '';
+    userEmail = prefs.getString('email') ?? '';
     update();
   }
 
+  Future<void> showConfirmationDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Are you sure you want to delete your account?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(
+                    context, false); // Close the dialog with result 'false'
+              },
+              child: Text('No'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+
+                Get.offAllNamed('signupScreen');
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
