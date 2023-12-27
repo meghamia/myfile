@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo/controllers/signup_controller.dart';
+import 'package:demo/model/LocalMusicModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -11,6 +14,7 @@ import '../model/MySongModel.dart';
 import '../screens/likedSongPage.dart';
 
 class HomePageController extends GetxController {
+  MySongModel? currentSong;
   List<MySongModel> likedSongs = [];
 
   final player = AudioPlayer();
@@ -28,16 +32,33 @@ class HomePageController extends GetxController {
   bool isCloudSoundPlaying = false;
   String albumUrl = "";
 
-  // List<MySongModel> likedSongs = [];
   void toggleFavorite() {
-    isLiked = !isLiked;
-    update(); // Notify GetX that the state has changed
+    print("currentSong: $currentSong");
+    print("Toggle Favorite Called");
+
+    if (currentSong != null) {
+      // Toggle liked state for the current song
+      currentSong!.isLiked = !currentSong!.isLiked;
+
+      // Add or remove the current song from the likedSongs list based on the liked state
+      if (currentSong!.isLiked) {
+        likedSongs.add(currentSong!);
+      } else {
+        likedSongs.removeWhere((song) => song.id == currentSong!.id);
+      }
+
+      print("isLiked: ${currentSong!.isLiked}");
+      print("likedSongs: $likedSongs");
+
+      update(); // Notify GetX that the state has changed
+    }
   }
 
   @override
   void onInit() {
     // TODO: implement onInit
     super.onInit();
+    currentSong = MySongModel();
     storagePermission();
     fetchUserData();
   }
@@ -145,6 +166,8 @@ class HomePageController extends GetxController {
   final audioQuery = OnAudioQuery();
 
   List<SongModel> localSongList = [];
+  List<LocalMusicModel> localMusicList = [];
+
   bool isDeviceSong = false;
   int currentSongPlayingIndex = 0;
 
@@ -155,6 +178,9 @@ class HomePageController extends GetxController {
       sortType: null,
       uriType: UriType.EXTERNAL,
     );
+    localSongList.forEach((element) {
+      localMusicList.add(LocalMusicModel.fromJson(element.getMap));
+    });
     print(localSongList);
     update();
   }
@@ -240,7 +266,6 @@ class HomePageController extends GetxController {
             ),
             ElevatedButton(
               onPressed: () {
-
                 Get.offAllNamed('signupScreen');
               },
               child: Text('Yes'),

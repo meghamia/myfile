@@ -92,11 +92,11 @@ class CloudSongController extends GetxController {
   void uploadSongToDB() async {
     MySongModel newSong = MySongModel(
       id: 1,
-      title: "Tujh-Bin-Instrumental-Official ",
-      artist: "shreya goshal",
+      title: "  Pied-Piper.mp3",
+      artist: "Kim Taehyung",
       album: "album",
-      albumArt: "https://i.pinimg.com/474x/9b/61/af/9b61afe7cf09e88325f6d356758b1e88.jpg",
-      data: "https://firebasestorage.googleapis.com/v0/b/fir-ac46d.appspot.com/o/Tujh-Bin-Instrumental-Official-Bharatt-Saurabh-Most-Romantic-Ringtone-2020_iiWHQ7_8ujM.mp3?alt=media&token=d3ddf452-e164-4515-a538-486d3f5d9748",
+      albumArt: "https://i.pinimg.com/474x/7c/eb/bd/7cebbd42df42d6660246bd6c31d1c099.jpg",
+      data: "https://firebasestorage.googleapis.com/v0/b/fir-ac46d.appspot.com/o/BTS-Pied-Piper.mp3?alt=media&token=75f25179-059b-488e-9e96-96a9a5204a4d",
     );
 
     await db.collection("trending").add(newSong.toJson());
