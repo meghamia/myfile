@@ -13,6 +13,7 @@ class LoginPage extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
+
     return Theme(
       data: ThemeData.light(),
       child: SafeArea(
@@ -121,16 +122,13 @@ class LoginPage extends GetView<LoginController> {
                             onPressed: () async {
                               if (controller.key.currentState!.validate()) {
                                 try {
-                                  controller.isLoading=true;
+                                  controller.isLoading(true);
 
                                   if (await controller.areCredentialsValid(
                                       controller.emailController.text,
                                       controller.passwordController.text)) {
-                                    await controller.saveUserInformation(
-                                      controller.emailController.text,
-                                      controller.passwordController.text,
-                                    );
-                                    Get.to(() => HomePage());
+
+                                    Get.offAllNamed('homePage');
                                   } else {
                                     Get.snackbar(
                                       'Error',
@@ -145,7 +143,7 @@ class LoginPage extends GetView<LoginController> {
                                     snackPosition: SnackPosition.BOTTOM,
                                   );
                                 } finally {
-                                  controller.isLoading=false;
+                                  controller.isLoading(false);
                                 }
                               }
                             },
@@ -154,13 +152,14 @@ class LoginPage extends GetView<LoginController> {
                           SizedBox(height: 10),
                           TextButton(
                             onPressed: () {
-                              Get.to(() => SignupPage());
+                              Get.toNamed('signupScreen');
                             },
                             child: Text(
                               'Don\'t Have an Account? Sign Up Now!',
                               style: TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.black87
                               ),
                             ),
                           ),

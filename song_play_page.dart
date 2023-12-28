@@ -11,10 +11,10 @@ import '../demo/songControllerButton.dart';
 import '../demo/songDetail.dart';
 import '../config/colors.dart';
 import '../controllers/songPlayerController.dart';
+import '../model/LocalMusicModel.dart';
 
 class SongPlayPage extends GetView<HomePageController> {
   //const SongPlayPage({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +26,13 @@ class SongPlayPage extends GetView<HomePageController> {
         builder: (controller) {
           return Scaffold(
             appBar: AppBar(
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      Get.to(LikedSongPage());
+                    },
+                    icon: Icon(Icons.favorite))
+              ],
               backgroundColor: Colors.transparent,
             ),
             body: Padding(
@@ -126,23 +133,51 @@ class SongPlayPage extends GetView<HomePageController> {
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       ),
+                      // IconButton(
+                      //   onPressed: () {
+                      //     if (controller
+                      //         .localMusicList[
+                      //             controller.currentSongPlayingIndex]
+                      //         .isLiked!) {
+                      //       controller
+                      //           .localMusicList[
+                      //               controller.currentSongPlayingIndex]
+                      //           .isLiked = (false);
+                      //     } else {
+                      //       controller
+                      //           .localMusicList[
+                      //               controller.currentSongPlayingIndex]
+                      //           .isLiked = (true);
+                      //     }
+                      //     controller.update();
+                      //   },
+                      //   icon: Icon(
+                      //     controller
+                      //                 .localMusicList[
+                      //                     controller.currentSongPlayingIndex]
+                      //                 .isLiked ==
+                      //             true
+                      //         ? Icons.favorite
+                      //         : Icons.favorite_border,
+                      //     color: controller
+                      //                 .localMusicList[
+                      //                     controller.currentSongPlayingIndex]
+                      //                 .isLiked ==
+                      //             true
+                      //         ? Colors
+                      //             .redAccent // You can change this color for testing
+                      //         : lableColor,
+                      //   ),
+                      // ),
                       IconButton(
                         onPressed: () {
-                          if (controller
-                              .localMusicList[
-                                  controller.currentSongPlayingIndex]
-                              .isLiked!) {
-                            controller
-                                .localMusicList[
-                                    controller.currentSongPlayingIndex]
-                                .isLiked = (false);
-                          } else {
-                            controller
-                                .localMusicList[
-                                    controller.currentSongPlayingIndex]
-                                .isLiked = (true);
-                          }
-                          controller.update();
+                          int currentSongIndex =
+                              controller.currentSongPlayingIndex;
+                          LocalMusicModel currentSong =
+                              controller.localMusicList[currentSongIndex];
+
+                          // Toggle the liked status
+                          controller.toggleLikeStatus(currentSong);
                         },
                         icon: Icon(
                           controller
@@ -157,8 +192,7 @@ class SongPlayPage extends GetView<HomePageController> {
                                           controller.currentSongPlayingIndex]
                                       .isLiked ==
                                   true
-                              ? Colors
-                                  .redAccent // You can change this color for testing
+                              ? Colors.redAccent
                               : lableColor,
                         ),
                       ),

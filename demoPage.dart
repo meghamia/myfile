@@ -14,8 +14,8 @@ class DemoPage extends StatelessWidget {
         child: ElevatedButton(
           child: Text("call database"),
           onPressed: () {
-           cloudSongController.getCloudSound();
-          //  cloudSongController.uploadSongToDB();
+          cloudSongController.getCloudSound();
+          // cloudSongController.uploadSongToDB();
           },
         ),
       ),

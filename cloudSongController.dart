@@ -77,9 +77,22 @@ class CloudSongController extends GetxController {
 
 
   List<MySongModel> cloudSongList = [];
-  List<MySongModel> trendingSongList = [];
 
+  List<MySongModel> searchSongList = [];
+  @override
+  void onReady() {
+    super.onReady();
+  }
 
+  void SearchQuery(String query){
+    if(query.isEmpty){
+      searchSongList.assignAll(cloudSongList);
+    }else {
+      searchSongList.assignAll(cloudSongList.where((song) => song.title!.toLowerCase().contains(query.toLowerCase()),
+      ));
+    }
+    update();
+  }
 
 
   @override
@@ -108,7 +121,6 @@ class CloudSongController extends GetxController {
 
   void getCloudSound() async {
     cloudSongList.clear();
-    trendingSongList.clear();
 
     // Fetch songs from the "songs" collection
     await db.collection("songs").get().then((value) {
@@ -123,7 +135,6 @@ class CloudSongController extends GetxController {
       value.docs.forEach((element) {
         MySongModel trendingSong = MySongModel.fromJson(element.data());
         cloudSongList.add(trendingSong); // Add trending songs to cloudSongList
-        trendingSongList.add(trendingSong); // Optionally, you can keep trending songs in a separate list if needed
 
       });
     });

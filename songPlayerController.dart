@@ -12,10 +12,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/MySongModel.dart';
 import '../screens/likedSongPage.dart';
+import 'cloudSongController.dart';
 
 class HomePageController extends GetxController {
   MySongModel? currentSong;
-  List<MySongModel> likedSongs = [];
 
   final player = AudioPlayer();
   bool isPlaying = false;
@@ -32,26 +32,50 @@ class HomePageController extends GetxController {
   bool isCloudSoundPlaying = false;
   String albumUrl = "";
 
-  void toggleFavorite() {
-    print("currentSong: $currentSong");
-    print("Toggle Favorite Called");
+  // void addToLikedSongs(MySongModel song) {
+  //   if (!likedSongs.contains(song)) {
+  //     likedSongs.add(song);
+  //   }
+  // }
+  //
+  // void removeFromLikedSongs(MySongModel song) {
+  //   likedSongs.remove(song);
+  // }
 
-    if (currentSong != null) {
-      // Toggle liked state for the current song
-      currentSong!.isLiked = !currentSong!.isLiked;
+  // void toggleFavorite() {
+  //   print("currentSong: $currentSong");
+  //   print("Toggle Favorite Called");
+  //
+  //   if (currentSong != null) {
+  //     // Toggle liked state for the current song
+  //     currentSong!.isLiked = !currentSong!.isLiked;
+  //
+  //     // Add or remove the current song from the likedSongs list based on the liked state
+  //     if (currentSong!.isLiked) {
+  //       likedSongs.add(currentSong!);
+  //     } else {
+  //       likedSongs.removeWhere((song) => song.id == currentSong!.id);
+  //     }
+  //
+  //     print("isLiked: ${currentSong!.isLiked}");
+  //     print("likedSongs: $likedSongs");
+  //
+  //     update(); // Notify GetX that the state has changed
+  //   }
+  // }
+  List<LocalMusicModel> likedSong = []; // List to store liked songs
 
-      // Add or remove the current song from the likedSongs list based on the liked state
-      if (currentSong!.isLiked) {
-        likedSongs.add(currentSong!);
-      } else {
-        likedSongs.removeWhere((song) => song.id == currentSong!.id);
-      }
+  void toggleLikeStatus(LocalMusicModel song) {
+    song.isLiked = !song.isLiked;
 
-      print("isLiked: ${currentSong!.isLiked}");
-      print("likedSongs: $likedSongs");
-
-      update(); // Notify GetX that the state has changed
+    if (song.isLiked==true) {
+      likedSong.add(song);
+    } else {
+      likedSong.remove(song);
     }
+    print("Liked Songs: ${likedSong}");
+    print("Liked Songs: ${song.isLiked.toString()}");
+    update(); // Trigger UI update
   }
 
   @override

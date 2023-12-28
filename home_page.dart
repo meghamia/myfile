@@ -68,7 +68,7 @@ class HomePage extends GetView<HomePageController> {
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.delete),
+                    leading: Icon(Icons.logout_sharp),
                     title: Text('Sign out'),
                     onTap: () {
                       controller.showConfirmationDialog(context);
@@ -125,26 +125,26 @@ class HomePage extends GetView<HomePageController> {
                       height: 20,
                     ),
                     CarouselSlider.builder(
-                      itemCount: cloudSongController.trendingSongList.length,
+                      itemCount: cloudSongController.cloudSongList.length,
                       itemBuilder: (context, index, realIndex) {
                         print(
-                            "Index: $index, RealIndex: $realIndex, List Length: ${cloudSongController.trendingSongList.length}");
+                            "Index: $index, RealIndex: $realIndex, List Length: ${cloudSongController.cloudSongList.length}");
 
-                        if (cloudSongController.trendingSongList.isEmpty) {
+                        if (cloudSongController.cloudSongList.isEmpty) {
                           // Handle the case when the list is empty, for example, show a placeholder or return an empty container
                           return Container(); // or show a placeholder widget
                         }
                         //images slider build hone se pehle hi cache mein available  ho jayegi
                         precacheImage(
                             NetworkImage(cloudSongController
-                                .trendingSongList[index].albumArt!),
+                                .cloudSongList[index].albumArt!),
                             context);
                         return Container(
                           padding: EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: NetworkImage(cloudSongController
-                                  .trendingSongList[index].albumArt!),
+                                  .cloudSongList[index].albumArt!),
                               fit: BoxFit.cover,
                             ),
                             color: divColor,
@@ -189,7 +189,7 @@ class HomePage extends GetView<HomePageController> {
                                       children: [
                                         Flexible(
                                           child: Text(
-                                            "${cloudSongController.trendingSongList[index].title}",
+                                            "${cloudSongController.cloudSongList[index].title}",
                                             maxLines: 1,
                                             style: TextStyle(
                                               fontFamily: "Poppins",
@@ -205,7 +205,7 @@ class HomePage extends GetView<HomePageController> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          "${cloudSongController.trendingSongList[index].artist}",
+                                          "${cloudSongController.cloudSongList[index].artist}",
                                           style: TextStyle(
                                             fontFamily: "Poppins",
                                             fontSize: 12,
